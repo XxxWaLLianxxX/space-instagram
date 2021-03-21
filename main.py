@@ -22,22 +22,15 @@ def fetch_spacex_last_launch(images_url, filename):
     return flights_images
 
 
-def fetch_hubble_photo(filename):
-    images_info, file_path = download_images(site_url="http://hubblesite.org/api/v3/image/1")
-    space_image = images_info["image_files"][-1]
-    space_image_url = "https:{}".format(space_image["file_url"])
-    response = requests.get(space_image_url, verify=False)
-    response.raise_for_status()
-    with open(file_path.format(image_number="", filename=filename), "wb") as img:
-        img.write(response.content)
-    return space_image_url
+def get_widening(image_url):
+    return image_url.split(".")[-1]
 
 
 def main():
     requests.packages.urllib3.disable_warnings()
 
     fetch_spacex_last_launch(images_url=fetch_spacex_last_launch, filename="spacex")
-    fetch_hubble_photo(filename="1hubble.jpg")
+    fetch_hubble_photos("hubble")
 
 
 if __name__ == '__main__':
