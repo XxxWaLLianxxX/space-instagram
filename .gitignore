@@ -4,4 +4,4 @@ media
 __pycache__
 *.sqlite3
 *.env
-*.REMOVE_ME
+images
