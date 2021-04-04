@@ -1,7 +1,12 @@
+import glob
 import io
-import requests
 import os
+import requests
+import shutil
+import time
 
+from dotenv import load_dotenv
+from instabot import Bot
 from PIL import Image
 
 
@@ -42,11 +47,29 @@ def fetch_hubble_photos():
         download_images(space_image_url, image_id, "hubble")
 
 
+def upload_photo_instagram():
+    shutil.rmtree("config", ignore_errors=True)
+    folder_path = "./images"
+    images = glob.glob(folder_path + "/*.jpg")
+    images = sorted(images)
+    bot = Bot()
+    bot.login(username=os.environ["LOGIN"], password=os.environ["PASSWORD"])
+    while True:
+        for image in images:
+            bot.upload_photo(image)
+            if bot.api.last_response.status_code != 200:
+                print(bot.api.last_response)
+                break
+        time.sleep(10)
+
+
 def main():
+    load_dotenv()
     requests.packages.urllib3.disable_warnings()
 
     fetch_spacex_last_launch()
     fetch_hubble_photos()
+    upload_photo_instagram()
 
 
 if __name__ == '__main__':
