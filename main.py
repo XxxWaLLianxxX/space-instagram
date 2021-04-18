@@ -18,7 +18,9 @@ def download_image(image_url, image_number, filename):
     encoded_image = response.content
     image_stream = io.BytesIO(encoded_image)
     decoded_image = Image.open(image_stream)
-    decoded_image.thumbnail((1080, 1080))
+    width = 1080
+    height = 1080
+    decoded_image.thumbnail((width, height))
     try:
         decoded_image.save(file_path.format(image_number=image_number, filename=filename))
     except:
