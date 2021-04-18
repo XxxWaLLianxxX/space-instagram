@@ -1,3 +1,4 @@
+import argparse
 import glob
 import io
 import os
@@ -18,8 +19,7 @@ def download_image(image_url, image_number, filename):
     encoded_image = response.content
     image_stream = io.BytesIO(encoded_image)
     decoded_image = Image.open(image_stream)
-    width = 1080
-    height = 1080
+    width, height = (1080, 1080)
     decoded_image.thumbnail((width, height))
     try:
         decoded_image.save(file_path.format(image_number=image_number, filename=filename))
@@ -27,8 +27,8 @@ def download_image(image_url, image_number, filename):
         print("Картинка не сохранилась")
 
 
-def fetch_spacex_last_launch():
-    site_url = "https://api.spacexdata.com/v3/launches/45"
+def fetch_spacex_last_launch(launch_number):
+    site_url = "https://api.spacexdata.com/v3/launches/{launch_number}".format(launch_number=launch_number)
     response = requests.get(site_url)
     response.raise_for_status()
     flights_images = response.json()["links"]["flickr_images"]
@@ -36,8 +36,8 @@ def fetch_spacex_last_launch():
         download_image(image_url, image_number + 1, "spacex")
 
 
-def fetch_hubble_photo():
-    site_url = "http://hubblesite.org/api/v3/images/spacecraft"
+def fetch_hubble_photo(collection_name):
+    site_url = "http://hubblesite.org/api/v3/images/{collection_name}".format(collection_name=collection_name)
     response = requests.get(site_url)
     response.raise_for_status()
     for image in response.json():
@@ -65,12 +65,35 @@ def upload_photo_instagram():
         time.sleep(10)
 
 
+def get_cmd_args():
+    parser = argparse.ArgumentParser(description="Программа выкладывает фото в Instagram")
+    parser.add_argument(
+        "-ln",
+        "--launch_number",
+        help="Номер полета",
+        default="2"
+    )
+    parser.add_argument(
+        "-cn",
+        "--collection_name",
+        help="Название коллекции",
+        default="spacecraft"
+    )
+    args = parser.parse_args()
+    return args
+
+
+args = get_cmd_args()
+launch_number = args.launch_number
+collection_name = args.collection_name
+
+
 def main():
     load_dotenv()
     requests.packages.urllib3.disable_warnings()
 
-    fetch_spacex_last_launch()
-    fetch_hubble_photo()
+    fetch_spacex_last_launch(launch_number)
+    fetch_hubble_photo(collection_name)
     upload_photo_instagram()
 
 
