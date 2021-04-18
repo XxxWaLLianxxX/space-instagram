@@ -10,7 +10,7 @@ from instabot import Bot
 from PIL import Image
 
 
-def download_images(image_url, image_number, filename):
+def download_image(image_url, image_number, filename):
     os.makedirs("images/", exist_ok=True)
     file_path = "images/{image_number}{filename}.jpg"
     response = requests.get(image_url, verify=False)
@@ -31,10 +31,10 @@ def fetch_spacex_last_launch():
     response.raise_for_status()
     flights_images = response.json()["links"]["flickr_images"]
     for image_number, image_url in enumerate(flights_images):
-        download_images(image_url, image_number + 1, "spacex")
+        download_image(image_url, image_number + 1, "spacex")
 
 
-def fetch_hubble_photos():
+def fetch_hubble_photo():
     site_url = "http://hubblesite.org/api/v3/images/spacecraft"
     response = requests.get(site_url)
     response.raise_for_status()
@@ -44,7 +44,7 @@ def fetch_hubble_photos():
         response.raise_for_status()
         space_image = response.json()["image_files"][-1]
         space_image_url = "https:{}".format(space_image["file_url"])
-        download_images(space_image_url, image_id, "hubble")
+        download_image(space_image_url, image_id, "hubble")
 
 
 def upload_photo_instagram():
@@ -68,7 +68,7 @@ def main():
     requests.packages.urllib3.disable_warnings()
 
     fetch_spacex_last_launch()
-    fetch_hubble_photos()
+    fetch_hubble_photo()
     upload_photo_instagram()
 
 
