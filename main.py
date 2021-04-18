@@ -55,7 +55,7 @@ def upload_photo_instagram():
     images = glob.glob(folder_path + "/*.jpg")
     images = sorted(images)
     bot = Bot()
-    bot.login(username=os.environ["LOGIN"], password=os.environ["PASSWORD"])
+    bot.login(username=os.environ["INSTA_LOGIN"], password=os.environ["INSTA_PASSWORD"])
     while True:
         for image in images:
             bot.upload_photo(image)
