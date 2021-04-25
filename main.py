@@ -16,11 +16,7 @@ FOLDER_PATH = "images"
 def download_image(image, image_number, filename):
     os.makedirs(FOLDER_PATH, exist_ok=True)
     file_path = "{folder_path}/{image_number}{filename}.jpg"
-    try:
-        image.save(
-            file_path.format(folder_path=FOLDER_PATH, image_number=image_number, filename=filename))
-    except:
-        print("Картинка не сохранилась")
+    image.save(file_path.format(folder_path=FOLDER_PATH, image_number=image_number, filename=filename))
 
 
 def correct_picture_resolution(image_url):
@@ -40,7 +36,10 @@ def fetch_spacex_last_launch(launch_number):
     response.raise_for_status()
     flights_images = response.json()["links"]["flickr_images"]
     for image_number, image_url in enumerate(flights_images):
-        download_image(correct_picture_resolution(image_url), image_number + 1, "spacex")
+        try:
+            download_image(correct_picture_resolution(image_url), image_number + 1, "spacex")
+        except:
+            print("Картинка не сохранилась")
 
 
 def fetch_hubble_photo(collection_name):
@@ -53,7 +52,10 @@ def fetch_hubble_photo(collection_name):
         response.raise_for_status()
         space_image = response.json()["image_files"][-1]
         space_image_url = "https:{}".format(space_image["file_url"])
-        download_image(correct_picture_resolution(space_image_url), image_id, "hubble")
+        try:
+            download_image(correct_picture_resolution(space_image_url), image_id, "hubble")
+        except:
+            print("Картинка не сохранилась")
 
 
 def upload_photo_instagram(login, password):
