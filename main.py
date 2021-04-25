@@ -10,10 +10,12 @@ from dotenv import load_dotenv
 from instabot import Bot
 from PIL import Image
 
+FOLDER_PATH = "images"
+
 
 def download_image(image_url, image_number, filename):
-    os.makedirs("images/", exist_ok=True)
-    file_path = "images/{image_number}{filename}.jpg"
+    os.makedirs(FOLDER_PATH, exist_ok=True)
+    file_path = "{folder_path}/{image_number}{filename}.jpg"
     response = requests.get(image_url, verify=False)
     response.raise_for_status()
     encoded_image = response.content
@@ -22,7 +24,7 @@ def download_image(image_url, image_number, filename):
     width, height = (1080, 1080)
     decoded_image.thumbnail((width, height))
     try:
-        decoded_image.save(file_path.format(image_number=image_number, filename=filename))
+        decoded_image.save(file_path.format(folder_path=FOLDER_PATH, image_number=image_number, filename=filename))
     except:
         print("Картинка не сохранилась")
 
@@ -51,8 +53,7 @@ def fetch_hubble_photo(collection_name):
 
 def upload_photo_instagram():
     shutil.rmtree("config", ignore_errors=True)
-    folder_path = "./images"
-    images = glob.glob(folder_path + "/*.jpg")
+    images = glob.glob("./{folder_path}" + "/*.jpg").format(folder_path=FOLDER_PATH)
     images = sorted(images)
     bot = Bot()
     bot.login(username=os.environ["INSTA_LOGIN"], password=os.environ["INSTA_PASSWORD"])
