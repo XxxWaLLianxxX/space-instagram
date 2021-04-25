@@ -13,9 +13,17 @@ from PIL import Image
 FOLDER_PATH = "images"
 
 
-def download_image(image_url, image_number, filename):
+def download_image(image, image_number, filename):
     os.makedirs(FOLDER_PATH, exist_ok=True)
     file_path = "{folder_path}/{image_number}{filename}.jpg"
+    try:
+        image.save(
+            file_path.format(folder_path=FOLDER_PATH, image_number=image_number, filename=filename))
+    except:
+        print("Картинка не сохранилась")
+
+
+def correct_picture_resolution(image_url):
     response = requests.get(image_url, verify=False)
     response.raise_for_status()
     encoded_image = response.content
@@ -23,10 +31,7 @@ def download_image(image_url, image_number, filename):
     decoded_image = Image.open(image_stream)
     width, height = (1080, 1080)
     decoded_image.thumbnail((width, height))
-    try:
-        decoded_image.save(file_path.format(folder_path=FOLDER_PATH, image_number=image_number, filename=filename))
-    except:
-        print("Картинка не сохранилась")
+    return decoded_image
 
 
 def fetch_spacex_last_launch(launch_number):
@@ -35,7 +40,7 @@ def fetch_spacex_last_launch(launch_number):
     response.raise_for_status()
     flights_images = response.json()["links"]["flickr_images"]
     for image_number, image_url in enumerate(flights_images):
-        download_image(image_url, image_number + 1, "spacex")
+        download_image(correct_picture_resolution(image_url), image_number + 1, "spacex")
 
 
 def fetch_hubble_photo(collection_name):
@@ -48,12 +53,12 @@ def fetch_hubble_photo(collection_name):
         response.raise_for_status()
         space_image = response.json()["image_files"][-1]
         space_image_url = "https:{}".format(space_image["file_url"])
-        download_image(space_image_url, image_id, "hubble")
+        download_image(correct_picture_resolution(space_image_url), image_id, "hubble")
 
 
 def upload_photo_instagram():
     shutil.rmtree("config", ignore_errors=True)
-    images = glob.glob("./{folder_path}" + "/*.jpg").format(folder_path=FOLDER_PATH)
+    images = glob.glob("./" + FOLDER_PATH + "/*.jpg")
     images = sorted(images)
     bot = Bot()
     bot.login(username=os.environ["INSTA_LOGIN"], password=os.environ["INSTA_PASSWORD"])
@@ -84,14 +89,13 @@ def get_cmd_args():
     return args
 
 
-args = get_cmd_args()
-launch_number = args.launch_number
-collection_name = args.collection_name
-
-
 def main():
     load_dotenv()
     requests.packages.urllib3.disable_warnings()
+
+    args = get_cmd_args()
+    launch_number = args.launch_number
+    collection_name = args.collection_name
 
     fetch_spacex_last_launch(launch_number)
     fetch_hubble_photo(collection_name)
