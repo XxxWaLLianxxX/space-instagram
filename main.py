@@ -56,12 +56,12 @@ def fetch_hubble_photo(collection_name):
         download_image(correct_picture_resolution(space_image_url), image_id, "hubble")
 
 
-def upload_photo_instagram():
+def upload_photo_instagram(login, password):
     shutil.rmtree("config", ignore_errors=True)
     images = glob.glob("./" + FOLDER_PATH + "/*.jpg")
     images = sorted(images)
     bot = Bot()
-    bot.login(username=os.environ["INSTA_LOGIN"], password=os.environ["INSTA_PASSWORD"])
+    bot.login(username=os.environ[login], password=os.environ[password])
     while True:
         for image in images:
             bot.upload_photo(image)
@@ -99,7 +99,7 @@ def main():
 
     fetch_spacex_last_launch(launch_number)
     fetch_hubble_photo(collection_name)
-    upload_photo_instagram()
+    upload_photo_instagram("INSTA_LOGIN", "INSTA_PASSWORD")
 
 
 if __name__ == '__main__':
