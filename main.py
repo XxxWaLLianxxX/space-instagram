@@ -37,7 +37,7 @@ def fetch_spacex_last_launch(launch_number):
     for image_number, image_url in enumerate(flights_images):
         try:
             download_image(correct_picture_resolution(image_url), image_number + 1, "spacex")
-        except:
+        except OSError:
             print("Картинка не сохранилась")
 
 
@@ -53,7 +53,7 @@ def fetch_hubble_collection(collection_name):
         space_image_url = "https:{}".format(space_image["file_url"])
         try:
             download_image(correct_picture_resolution(space_image_url), image_id, "hubble")
-        except:
+        except OSError:
             print("Картинка не сохранилась")
 
 
