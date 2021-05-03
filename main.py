@@ -14,7 +14,6 @@ FOLDER_PATH = "images"
 
 
 def download_image(image, image_number, filename):
-    os.makedirs(FOLDER_PATH, exist_ok=True)
     file_path = "{folder_path}/{image_number}{filename}.jpg"
     image.save(file_path.format(folder_path=FOLDER_PATH, image_number=image_number, filename=filename))
 
@@ -94,6 +93,8 @@ def get_cmd_args():
 def main():
     load_dotenv()
     requests.packages.urllib3.disable_warnings()
+
+    os.makedirs(FOLDER_PATH, exist_ok=True)
 
     args = get_cmd_args()
     launch_number = args.launch_number
