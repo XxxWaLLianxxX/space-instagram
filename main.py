@@ -42,7 +42,7 @@ def fetch_spacex_last_launch(launch_number):
             print("Картинка не сохранилась")
 
 
-def fetch_hubble_photo(collection_name):
+def fetch_hubble_collection(collection_name):
     site_url = "http://hubblesite.org/api/v3/images/{collection_name}".format(collection_name=collection_name)
     response = requests.get(site_url)
     response.raise_for_status()
@@ -100,7 +100,7 @@ def main():
     collection_name = args.collection_name
 
     fetch_spacex_last_launch(launch_number)
-    fetch_hubble_photo(collection_name)
+    fetch_hubble_collection(collection_name)
     upload_photo_instagram("INSTA_LOGIN", "INSTA_PASSWORD")
 
 
