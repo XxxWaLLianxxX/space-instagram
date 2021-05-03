@@ -59,7 +59,7 @@ def fetch_hubble_collection(collection_name):
 
 def upload_photo_instagram(login, password):
     shutil.rmtree("config", ignore_errors=True)
-    images = glob.glob("./" + FOLDER_PATH + "/*.jpg")
+    images = glob.glob("./{folder_path}/*.jpg".format(folder_path=FOLDER_PATH))
     images = sorted(images)
     bot = Bot()
     bot.login(username=os.environ[login], password=os.environ[password])
