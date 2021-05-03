@@ -62,7 +62,7 @@ def upload_photo_instagram(login, password):
     images = glob.glob("./{folder_path}/*.jpg".format(folder_path=FOLDER_PATH))
     images = sorted(images)
     bot = Bot()
-    bot.login(username=os.environ[login], password=os.environ[password])
+    bot.login(username=login, password=password)
     for image in images:
         bot.upload_photo(image)
         if bot.api.last_response.status_code != 200:
@@ -95,13 +95,15 @@ def main():
 
     os.makedirs(FOLDER_PATH, exist_ok=True)
 
+    login, password = os.environ["INSTA_LOGIN"], os.environ["INSTA_PASSWORD"]
+
     args = get_cmd_args()
     launch_number = args.launch_number
     collection_name = args.collection_name
 
     fetch_spacex_last_launch(launch_number)
     fetch_hubble_collection(collection_name)
-    upload_photo_instagram("INSTA_LOGIN", "INSTA_PASSWORD")
+    upload_photo_instagram(login, password)
 
 
 if __name__ == "__main__":
