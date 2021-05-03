@@ -104,5 +104,5 @@ def main():
     upload_photo_instagram("INSTA_LOGIN", "INSTA_PASSWORD")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
