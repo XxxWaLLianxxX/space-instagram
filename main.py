@@ -63,13 +63,12 @@ def upload_photo_instagram(login, password):
     images = sorted(images)
     bot = Bot()
     bot.login(username=os.environ[login], password=os.environ[password])
-    while True:
-        for image in images:
-            bot.upload_photo(image)
-            if bot.api.last_response.status_code != 200:
-                print(bot.api.last_response)
-                break
-        time.sleep(10)
+    for image in images:
+        bot.upload_photo(image)
+        if bot.api.last_response.status_code != 200:
+            print(bot.api.last_response)
+            break
+    time.sleep(10)
 
 
 def get_cmd_args():
