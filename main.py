@@ -13,48 +13,42 @@ from PIL import Image
 FOLDER_PATH = "images"
 
 
-def download_image(image, image_number, filename):
-    file_path = "{folder_path}/{image_number}{filename}.jpg"
-    image.save(file_path.format(folder_path=FOLDER_PATH, image_number=image_number, filename=filename))
-
-
-def correct_picture_resolution(image_url):
+def download_image(image_url, image_number, filename):
     response = requests.get(image_url, verify=False)
     response.raise_for_status()
-    encoded_image = response.content
-    image_stream = io.BytesIO(encoded_image)
+    image_stream = io.BytesIO(response.content)
     decoded_image = Image.open(image_stream)
-    width, height = (1080, 1080)
-    decoded_image.thumbnail((width, height))
-    return decoded_image
+    file_path = "{folder_path}/{image_number}{filename}.jpg"
+    decoded_image.save(file_path.format(folder_path=FOLDER_PATH, image_number=image_number, filename=filename))
+
+
+def correct_picture_resolution():
+    images = glob.glob("./{folder_path}/*.jpg".format(folder_path=FOLDER_PATH))
+    for image in images:
+        image = Image.open(image)
+        width, height = (1080, 1080)
+        image.thumbnail((width, height))
 
 
 def fetch_spacex_last_launch(launch_number):
     site_url = "https://api.spacexdata.com/v3/launches/{launch_number}".format(launch_number=launch_number)
-    response = requests.get(site_url)
+    response = requests.get(site_url, verify=False)
     response.raise_for_status()
     flights_images = response.json()["links"]["flickr_images"]
-    for image_number, image_url in enumerate(flights_images):
-        try:
-            download_image(correct_picture_resolution(image_url), image_number + 1, "spacex")
-        except OSError:
-            print("Картинка не сохранилась")
+    return flights_images
 
 
 def fetch_hubble_collection(collection_name):
     site_url = "http://hubblesite.org/api/v3/images/{collection_name}".format(collection_name=collection_name)
-    response = requests.get(site_url)
+    response = requests.get(site_url, verify=False)
     response.raise_for_status()
+    space_image_urls = []
     for image in response.json():
-        image_id = image["id"]
-        response = requests.get("http://hubblesite.org/api/v3/image/{id}".format(id=image_id))
+        response = requests.get("http://hubblesite.org/api/v3/image/{id}".format(id=image["id"]), verify=False)
         response.raise_for_status()
         space_image = response.json()["image_files"][-1]
-        space_image_url = "https:{}".format(space_image["file_url"])
-        try:
-            download_image(correct_picture_resolution(space_image_url), image_id, "hubble")
-        except OSError:
-            print("Картинка не сохранилась")
+        space_image_urls.append("https:{}".format(space_image["file_url"]))
+    return space_image_urls
 
 
 def upload_photo_instagram(login, password):
@@ -101,8 +95,22 @@ def main():
     launch_number = args.launch_number
     collection_name = args.collection_name
 
-    fetch_spacex_last_launch(launch_number)
-    fetch_hubble_collection(collection_name)
+    flights_images = fetch_spacex_last_launch(launch_number)
+    space_image_urls = fetch_hubble_collection(collection_name)
+    for image_number, image_url in enumerate(flights_images):
+        try:
+            download_image(image_url, image_number + 1, "spacex")
+        except OSError:
+            print("Картинка не сохранилась")
+    for image_number, space_image_url in enumerate(space_image_urls):
+        try:
+            download_image(space_image_url, image_number + 1, "hubble")
+        except OSError:
+            print("Картинка не сохранилась")
+    try:
+        correct_picture_resolution()
+    except OSError:
+        print("Не удалось обрезать")
     upload_photo_instagram(login, password)
 
 
