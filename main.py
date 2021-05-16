@@ -60,8 +60,7 @@ def upload_photo_instagram(login, password):
     for image in images:
         bot.upload_photo(image)
         if bot.api.last_response.status_code != 200:
-            print(bot.api.last_response)
-            break
+            raise requests.HTTPError(bot.api.last_response)
     time.sleep(10)
 
 
