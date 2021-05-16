@@ -80,11 +80,11 @@ def get_cmd_args():
     return args
 
 
-def main():
+def main(folder_path):
     load_dotenv()
     requests.packages.urllib3.disable_warnings()
 
-    os.makedirs(FOLDER_PATH, exist_ok=True)
+    os.makedirs(folder_path, exist_ok=True)
 
     login, password = os.environ["INSTA_LOGIN"], os.environ["INSTA_PASSWORD"]
 
@@ -112,4 +112,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main("images")
