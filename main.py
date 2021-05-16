@@ -94,14 +94,14 @@ def main(folder_path):
 
     flights_images = fetch_spacex_last_launch(launch_number)
     space_image_urls = fetch_hubble_collection(collection_name)
-    for image_number, image_url in enumerate(flights_images):
+    for image_number, image_url in enumerate(flights_images, start=1):
         try:
-            download_image(image_url, image_number + 1, "spacex", "images")
+            download_image(image_url, image_number, "spacex", "images")
         except OSError:
             print("Картинка не сохранилась")
-    for image_number, space_image_url in enumerate(space_image_urls):
+    for image_number, space_image_url in enumerate(space_image_urls, start=1):
         try:
-            download_image(space_image_url, image_number + 1, "hubble", "images")
+            download_image(space_image_url, image_number, "hubble", "images")
         except OSError:
             print("Картинка не сохранилась")
     try:
