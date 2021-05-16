@@ -13,17 +13,17 @@ from PIL import Image
 FOLDER_PATH = "images"
 
 
-def download_image(image_url, image_number, filename):
+def download_image(image_url, image_number, filename, folder_path):
     response = requests.get(image_url, verify=False)
     response.raise_for_status()
     image_stream = io.BytesIO(response.content)
     decoded_image = Image.open(image_stream)
     file_path = "{folder_path}/{image_number}{filename}.jpg"
-    decoded_image.save(file_path.format(folder_path=FOLDER_PATH, image_number=image_number, filename=filename))
+    decoded_image.save(file_path.format(folder_path=folder_path, image_number=image_number, filename=filename))
 
 
-def correct_picture_resolution():
-    images = glob.glob("./{folder_path}/*.jpg".format(folder_path=FOLDER_PATH))
+def correct_picture_resolution(folder_path):
+    images = glob.glob("./{folder_path}/*.jpg".format(folder_path=folder_path))
     for image in images:
         image = Image.open(image)
         width, height = (1080, 1080)
@@ -51,9 +51,9 @@ def fetch_hubble_collection(collection_name):
     return space_image_urls
 
 
-def upload_photo_instagram(login, password):
+def upload_photo_instagram(login, password, folder_path):
     shutil.rmtree("config", ignore_errors=True)
-    images = glob.glob("./{folder_path}/*.jpg".format(folder_path=FOLDER_PATH))
+    images = glob.glob("./{folder_path}/*.jpg".format(folder_path=folder_path))
     images = sorted(images)
     bot = Bot()
     bot.login(username=login, password=password)
@@ -98,19 +98,19 @@ def main():
     space_image_urls = fetch_hubble_collection(collection_name)
     for image_number, image_url in enumerate(flights_images):
         try:
-            download_image(image_url, image_number + 1, "spacex")
+            download_image(image_url, image_number + 1, "spacex", "images")
         except OSError:
             print("Картинка не сохранилась")
     for image_number, space_image_url in enumerate(space_image_urls):
         try:
-            download_image(space_image_url, image_number + 1, "hubble")
+            download_image(space_image_url, image_number + 1, "hubble", "images")
         except OSError:
             print("Картинка не сохранилась")
     try:
-        correct_picture_resolution()
+        correct_picture_resolution("images")
     except OSError:
         print("Не удалось обрезать")
-    upload_photo_instagram(login, password)
+    upload_photo_instagram(login, password, "images")
 
 
 if __name__ == "__main__":
