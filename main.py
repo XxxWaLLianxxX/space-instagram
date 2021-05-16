@@ -28,7 +28,7 @@ def correct_picture_resolution(folder_path):
         image.thumbnail((width, height))
 
 
-def fetch_spacex_last_launch(launch_number):
+def fetch_spacex_launch(launch_number):
     site_url = "https://api.spacexdata.com/v3/launches/{launch_number}".format(launch_number=launch_number)
     response = requests.get(site_url, verify=False)
     response.raise_for_status()
@@ -92,7 +92,7 @@ def main(folder_path):
     launch_number = args.launch_number
     collection_name = args.collection_name
 
-    flights_images = fetch_spacex_last_launch(launch_number)
+    flights_images = fetch_spacex_launch(launch_number)
     space_image_urls = fetch_hubble_collection(collection_name)
     for image_number, image_url in enumerate(flights_images, start=1):
         try:
