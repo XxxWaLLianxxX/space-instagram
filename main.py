@@ -10,8 +10,6 @@ from dotenv import load_dotenv
 from instabot import Bot
 from PIL import Image
 
-FOLDER_PATH = "images"
-
 
 def download_image(image_url, image_number, filename, folder_path):
     response = requests.get(image_url, verify=False)
