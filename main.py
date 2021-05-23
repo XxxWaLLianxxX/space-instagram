@@ -59,7 +59,7 @@ def upload_photo_instagram(login, password, folder_path):
         bot.upload_photo(image)
         if bot.api.last_response.status_code != 200:
             raise requests.HTTPError(bot.api.last_response)
-    time.sleep(10)
+        time.sleep(10)
 
 
 def get_cmd_args():
